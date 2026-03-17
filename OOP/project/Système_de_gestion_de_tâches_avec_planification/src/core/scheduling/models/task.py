@@ -2,7 +2,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from typing import TypedDict
+
 from .ids import TaskId, MachineId
+
 
 class TaskStatus(Enum):
     PENDING = "PENDING"
@@ -10,12 +13,13 @@ class TaskStatus(Enum):
     # READY = "READY"
     COMPLETED = "COMPLETED"
 
-@dataclass(frozen=True)
-class TaskSpec:
+
+@dataclass(frozen=True,slots=True)
+class _TaskSpec:
     '''
     Task specification, used for task generation.
     '''
-    id: TaskId
+    # id: TaskId
     duration:int = 1
     release_time:int = 0
     deadline:int | None = None
@@ -30,8 +34,8 @@ class TaskSpec:
         
 
 
-@dataclass
-class TaskRuntime:
+@dataclass(slots=True)
+class _TaskRuntime:
     '''
     Task runtime information, used for scheduling and state mutation.
     '''
@@ -58,3 +62,23 @@ class TaskRuntime:
 #         if self.deadline is not None and self.deadline <= 0:
 #             raise ValueError("Deadline must be a positive integer or None.")
 
+@dataclass(frozen=True,slots=True)
+class TaskView():
+    id: TaskId
+    status: TaskStatus
+    machine_id: MachineId | None
+    start_time: int | None
+    finish_time: int | None
+
+    duration: int
+    release_time: int
+    deadline: int | None
+
+
+class TaskInit(TypedDict):
+    duration:int
+    release_time:int
+    deadline:int | None 
+
+  
+   

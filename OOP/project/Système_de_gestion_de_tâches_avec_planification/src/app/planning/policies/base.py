@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 
 
 
-from ..decisions.observation import Observation
-from ..decisions.action import Action
+from ..observations.scheduling_observation import Observation
+from core.scheduling.decisions.action import Action
 
 class Policy(ABC):
     """
@@ -14,5 +14,5 @@ class Policy(ABC):
     Policy is a stateless function that maps the current observation to a decision (task selection).
     """
     @abstractmethod
-    def decide(self, obs:Observation) -> Action:
-        raise NotImplementedError("decide method must be implemented by subclasses.")
+    def select(self, obs:Observation) -> Action:
+        raise NotImplementedError("select method must be implemented by subclasses.")

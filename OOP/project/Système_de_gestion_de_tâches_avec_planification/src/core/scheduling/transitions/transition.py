@@ -9,10 +9,11 @@ from ..models.task import TaskStatus
 
 class Transition(ABC):
     @abstractmethod
-    def apply(self, state: SchedulingState, action: Action) -> SchedulingState:...
+    def apply(self, state: SchedulingState, action: Action) -> list[Event]:...
     
     @abstractmethod
-    def advance(self,state: SchedulingState) -> SchedulingState:...
+    def advance(self,state: SchedulingState) -> list[Event]:...
+
 
 
 def apply_action(state: SchedulingState, action: Action) -> list[Event]:
