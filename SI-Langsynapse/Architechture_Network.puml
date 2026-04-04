@@ -1,0 +1,83 @@
+@startuml
+
+left to right direction
+!include https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/common.puml
+!include https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome/server.puml
+!include https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5/database.puml
+!include https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5/cloud.puml
+!include https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons/mysql.puml
+
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam nodesep 10
+skinparam ranksep 12
+skinparam rectangle {
+  BackgroundColor #F8F8F8
+  BorderColor #BBBBBB
+  RoundCorner 10
+  Padding 4
+}
+
+title LangSynapse Network Architecture (Compact Cisco Style)
+
+actor "Utilisateur" as user #ADD8E6
+rectangle "<$cloud>\nInternet" as net #FFFFFF
+rectangle "<$server>\nEdge" as edge #ECF5FF
+rectangle "CDN Cache" as cdn #FFF4CC
+rectangle "<$server>\nPasserelle Réseau" as gw #FFE0E0
+
+user --> net
+net --> edge
+edge --> cdn
+cdn --> gw
+
+' ====================== REGION A - VPC ======================
+frame "Région A – VPC" {
+  rectangle "<$server>\nPare-feu" as fw #FFCCCC
+  rectangle "<$server>\nRouteur A" as rA #E8D9FF
+  rectangle "<$server>\nCommutateur A" as swA #FFFFFF
+  hexagon "Load Balancer A" as lba #FFF0D6
+
+  rectangle "Next.js Serverless A" as nextA #DAF5D9
+  rectangle "Next.js Serverless N" as nextN #DAF5D9
+
+  FA5_DATABASE(dbP, "DB\nPrimary", database, white) #E8D9FF
+  FA5_DATABASE(dbS, "DB\nSecondary", database, white) #E8D9FF
+
+  gw --> fw
+  fw --> rA
+  rA --> swA
+  swA --> lba
+  lba --> nextA
+  lba --> nextN
+
+  nextA --> dbP
+  nextN --> dbS
+  dbP <--> dbS : Réplication
+}
+
+' ====================== AI CENTER ZONE ======================
+frame "Zone IA" {
+  rectangle "<$server>\nPare-feu IA" as aiFw #FFCCCC
+  rectangle "<$server>\nRouteur IA" as aiR #E8D9FF
+  rectangle "<$server>\nCommutateur IA" as aiSw #FFFFFF
+
+  rectangle "AI Core Service" as aiCore #FFDCDC
+  DEV_MYSQL(aiDB,"AI DB",database) #FFFFFF
+  rectangle "LLM Provider" as llm #FFE595
+
+  gw --> aiFw
+  aiFw --> aiR
+  aiR --> aiSw
+  aiSw --> aiCore
+
+  aiCore --> aiDB
+  aiCore --> llm
+}
+
+' ====================== FLUX APPLICATIF ======================
+nextA -[hidden]-> nextN
+nextA --> aiCore : Appel API IA
+nextN --> aiCore : Appel API IA
+
+@enduml
