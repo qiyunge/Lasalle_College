@@ -1,0 +1,2 @@
+# Verified State Transfer System (VSTS)
+A verified and secure state transfer subsystem designed for decision simulation systems, ensuring integrity, reproducibility, and optional confidentiality using hashing and RSA-based encryption.
