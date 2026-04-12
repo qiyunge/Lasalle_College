@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Key Pair - {{ project_name }}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-card">
+      <span class="hero-eyebrow">Crypto Tool</span>
+      <h1>Generate Key Pair</h1>
+      <p>Generate a new RSA key pair.</p>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+<div class="tool-card">
+  
+
+  <button class="button button-primary" onclick="generateKeys()">
+    Generate Key Pair
+  </button>
+
+  <div class="key-results">
+
+    <!-- Public Key -->
+    <div class="key-block">
+      <div class="key-header">
+        <span>Public Key</span>
+        <div class="key-actions">
+          <button onclick="copyKey('publicKeyOut')">Copy</button>
+          <button onclick="downloadFile('publicKeyOut', 'public.pem')">
+            Download
+          </button>
+        </div>
+      </div>
+
+      <textarea id="publicKeyOut" rows="8" readonly></textarea>
+    </div>
+
+    <!-- Private Key -->
+    <div class="key-block">
+      <div class="key-header">
+        <span>Private Key</span>
+      
+        <div class="key-actions">
+          <button onclick="copyKey('privateKeyOut')">Copy</button>
+          <button onclick="downloadFile('privateKeyOut', 'private.pem')">
+            Download
+          </button>
+        </div>
+      </div>
+
+      <textarea id="privateKeyOut" rows="8" readonly></textarea>
+        <p style="color:red; font-size:12px;">
+        ⚠️ Never share your private key
+        </p>
+    </div>
+    </div>
+</div>
+  </div>
+</section>
+
+<script>
+async function generateKeys() {
+  const response = await fetch("{{ url_for('generate_keypair') }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      key_size: 2048 // You can adjust the key size as form input
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("publicKeyOut").value = data.public_key;
+  document.getElementById("privateKeyOut").value = data.private_key;
+}
+
+function downloadFile(textareaId, filename) {
+  const content = document.getElementById(textareaId).value;
+
+  if (!content) {
+    alert("Nothing to download");
+    return;
+  }
+
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+
+  document.body.appendChild(a);
+  a.click();
+
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+
+function copyKey(textareaId) {
+  const textarea = document.getElementById(textareaId);
+
+  if (!textarea.value) {
+    alert("Nothing to copy");
+    return;
+  }
+
+  textarea.select();
+  navigator.clipboard.writeText(textarea.value).then(
+    () => {
+      alert("Copied to clipboard!");
+    },
+    (err) => {
+      console.error("Failed to copy: ", err);
+      alert("Failed to copy");
+    }
+  );
+
+
+}
+
+</script>
+{% endblock %}

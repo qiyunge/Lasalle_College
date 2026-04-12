@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from vsts.core.rsa_service import RSAService
+from vsts.core.rsa import RSAService
 
 class TestRSAService(unittest.TestCase):
     def setUp(self):

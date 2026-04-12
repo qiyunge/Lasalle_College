@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Encryption / Decryption - {{ project_name }}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-card">
+      <span class="hero-eyebrow">Crypto Tool</span>
+      <h1>Encryption / Decryption</h1>
+      <p>Encrypt and decrypt messages securely.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tool-grid">
+
+      <!-- Encrypt Card -->
+      <div class="tool-card">
+        <h2>Encrypt Message</h2>
+        <p class="tool-subtitle">
+          Enter plaintext and generate ciphertext with AES-GCM.
+        </p>
+
+        <div class="form-group file-panel">
+          <label for="plaintext" class="file-panel-title">Plaintext</label>
+          <div class="file-upload-row">
+            <input type="file" id="plaintextFile" accept=".txt">
+          </div>
+
+          <textarea id="plaintext"  class="file-textarea" rows="6" placeholder="Enter message or upload a plaintext file to encrypt ..."></textarea>
+        </div>
+
+        <div class="form-group file-panel">
+          <label class="file-panel-title">Public Key (PEM file)</label>
+          <div class="file-upload-row">
+            <input type="file" id="publicKeyFile" accept=".pem,.txt">
+          </div>
+         
+          <textarea id="publicKey" class="file-textarea" rows="3"  placeholder="Paste public key (Base64) here  or upload a rsa public key file"></textarea>
+        </div>
+
+        <div class="action-row">
+          <button class="button button-primary" onclick="encryptMessage()">Encrypt</button>
+        </div>
+
+        <div id="encryptStatus" class="status"></div>
+
+        <div class="result-block">
+          <label for="ciphertext">Ciphertext</label>
+          <textarea id="ciphertext" rows="6" ></textarea>
+        </div>
+
+
+       </div> 
+
+      <!-- Decrypt Card -->
+      <div class="tool-card">
+        <h2>Decrypt Message</h2>
+        <p class="tool-subtitle">
+          Paste ciphertext, nonce, and key to recover the plaintext.
+        </p>
+
+        <div class="form-group file-panel">
+          <label class="file-panel-title">Ciphertext</label>
+          <div class="file-upload-row">
+            <input type="file" id="ciphertextFile" accept=".txt">
+          </div>
+
+          <textarea id="decryptCiphertext"  class="file-textarea" rows="6" placeholder="Paste ciphertext here or upload a ciphertext file to decrypt ..."></textarea>
+        </div>
+
+        <div class="form-group file-panel">
+          <label class="file-panel-title">Private Key (PEM file)</label>
+          <div class="file-upload-row">
+            <input type="file" id="privateKeyFile" accept=".pem,.txt">
+          </div>
+         
+          <textarea id="privateKey" class="file-textarea" rows="3" readonly placeholder="Private key (Base64) will appear here..."></textarea>
+        </div>
+
+       
+
+        <div class="action-row">
+          <button class="button button-primary" onclick="decryptMessage()">Decrypt</button>
+        </div>
+
+        <div id="decryptStatus" class="status"></div>
+
+        <div class="result-block">
+          <label for="decryptedPlaintext">Plaintext</label>
+          <textarea id="decryptedPlaintext" rows="6" readonly></textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+async function encryptMessage() {
+  const plaintext = document.getElementById("plaintext").value.trim();
+  const keyFile = document.getElementById("publicKeyFile").files[0];
+
+  const status = document.getElementById("encryptStatus");
+
+  if (!plaintext || !keyFile) {
+    alert("Please provide plaintext and public key file.");
+    return;
+  }
+
+  status.textContent = "Encrypting...";
+
+const publicKey = document.getElementById("publicKey").value.trim();
+
+const response = await fetch("{{ url_for('rsa_encrypt') }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      plaintext: plaintext,
+      public_key_pem: publicKey
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("ciphertext").value = data.ciphertext || "";
+
+  status.textContent = "Done.";
+}
+async function decryptMessage() {
+  const ciphertext = document.getElementById("decryptCiphertext").value.trim();
+  const keyFile = document.getElementById("privateKeyFile").files[0];
+
+  const status = document.getElementById("decryptStatus");
+
+  if (!ciphertext || !keyFile) {
+    alert("Please provide ciphertext and private key file.");
+    return;
+  }
+
+  status.textContent = "Decrypting...";
+
+  const privateKey = document.getElementById("privateKey").value.trim();
+
+  const response = await fetch("{{ url_for('rsa_decrypt') }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      ciphertext: ciphertext,
+      private_key_pem: privateKey
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("decryptedPlaintext").value = data.plaintext || "";
+
+  status.textContent = "Done.";
+}
+
+
+async function loadKeyToTextarea(fileInputId, textareaId) {
+  const fileInput = document.getElementById(fileInputId);
+  const textarea = document.getElementById(textareaId);
+
+  if (!fileInput.files.length) {
+    textarea.value = "";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const content = await file.text();
+
+  textarea.value = content;
+}
+
+document.getElementById("publicKeyFile")
+  .addEventListener("change", () => {
+    loadKeyToTextarea("publicKeyFile", "publicKey");
+  });
+
+document.getElementById("privateKeyFile")
+  .addEventListener("change", () => {
+    loadKeyToTextarea("privateKeyFile", "privateKey");
+  });
+
+document.getElementById("ciphertextFile")
+  .addEventListener("change", () => {
+    loadKeyToTextarea("ciphertextFile", "decryptCiphertext");
+  });
+
+document.getElementById("plaintextFile")
+  .addEventListener("change", () => {
+    loadKeyToTextarea("plaintextFile", "plaintext");
+  });
+</script>
+
+{% endblock %}

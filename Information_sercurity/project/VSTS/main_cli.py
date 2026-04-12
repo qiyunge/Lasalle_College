@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from vsts.core.hash_service import HashService
-from vsts.core.rsa_service import RSAService
+from vsts.core.rsa import RSAService
 from vsts.core.state_transfer_service import StateTransferService, TransferResult
 
 

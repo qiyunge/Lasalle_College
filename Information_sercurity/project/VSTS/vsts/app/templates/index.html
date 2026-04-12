@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project_name }}{% endblock %}
+
+{% block content %}
+
+  <!-- hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <span class="hero-eyebrow">Security Platform</span>
+
+        <h1>{{ project_name }}</h1>
+        <p>{{ project_subtitle }}</p>
+
+        <div class="hero-actions">
+          <a href="{{ url_for('swagger_ui_html') }}" class="button button-primary">
+            Open API Docs
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- features -->
+  <section class="section">
+    <div class="container">
+
+      <h2 class="section-title">Features</h2>
+      <p class="section-subtitle">
+        Core capabilities for encryption, signature, and key management.
+      </p>
+
+      <div class="feature-grid">
+        {% for feature in features %}
+          <div class="feature-card">
+            <h3>
+              <span class="icon">{{ feature.icon }}</span>
+              {{ feature.title }}
+            </h3>
+
+            <p>{{ feature.description }}</p>
+
+            <a href="{{ url_for(feature.endpoint) }}">
+              Go →
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+{% endblock %}

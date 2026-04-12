@@ -1,5 +1,5 @@
 from vsts.core.state_transfer_service import StateTransferService, TransferResult
-from vsts.core.rsa_service import RSAService
+from vsts.core.rsa import RSAService
 
 def test_transfer_small_file(tmp_path):
     # Generate RSA keys

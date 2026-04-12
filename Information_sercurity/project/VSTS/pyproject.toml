@@ -5,8 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vsts-secure-transfer"
 version = "0.1.0"
-dependencies =["cryptography", "pytest"]
+dependencies =["cryptography",
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "python-multipart",]
 readme = "README.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",]
 
 [tool.setuptools]
 include-package-data = true

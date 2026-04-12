@@ -1,0 +1,1 @@
+from .web_config import STATIC_DIR, TEMPLATES_DIR,templates

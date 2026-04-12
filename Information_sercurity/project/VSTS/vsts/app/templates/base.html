@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- favicon -->
+  <link rel="icon" href="/static/favicon.ico">
+
+  <!-- css -->
+  <link rel="stylesheet" href="/static/style.css">
+
+  <title>{% block title %}{{ project_name }}{% endblock %}</title>
+</head>
+
+<body>
+
+  <!-- header -->
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <div class="brand">{{ project_name }}</div>
+      <nav class="nav">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('swagger_ui_html') }}">API Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <!-- footer -->
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <p>© 2026 Security Demo Platform</p>
+      <p>Built by Qiyun Ge and Yanping Yu - focus on AI,3D, and system design</p>
+    </div>
+  </footer>
+
+</body>
+</html>

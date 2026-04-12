@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from vsts.core.hash_service import HashService
-from vsts.core.rsa_service import RSAService
+from vsts.core.rsa import RSAService
 
 @dataclass(frozen = True)
 class TransferResult:

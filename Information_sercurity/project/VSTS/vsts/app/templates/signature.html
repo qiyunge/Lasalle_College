@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Signature - {{ project_name }}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-card">
+      <span class="hero-eyebrow">Crypto Tool</span>
+      <h1>Digital Signature</h1>
+      <p>Sign messages with a private key and verify them with a public key.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tool-grid">
+
+
+  <!-- Sign Card -->
+  <div class="tool-card">
+    <h2>Sign Message</h2>
+    <p class="tool-subtitle">
+      Upload a private key, enter a message, and generate a digital signature.
+    </p>
+
+    <div class="form-group">
+      <label for="signMessage">Message</label>
+      <textarea id="signMessage" rows="6" placeholder="Enter message to sign..."></textarea>
+    </div>
+
+    <div class="form-group file-panel">
+      <label class="file-panel-title">Private Key</label>
+
+      <div class="file-upload-row">
+        <input type="file" id="privateKeyFile" accept=".pem,.txt">
+      </div>
+
+      <textarea
+        id="privateKeyContent"
+        class="file-textarea no-pointer-events"
+        rows="8"
+        placeholder="Upload private key file and key content will appear here..."
+        readonly
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button class="button button-primary" onclick="signMessage()">Sign</button>
+    </div>
+
+    <div id="signStatus" class="status"></div>
+
+    <div class="result-block">
+      <label for="signatureOutput">Signature</label>
+      <textarea id="signatureOutput" rows="6" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- Verify Card -->
+  <div class="tool-card">
+    <h2>Verify Signature</h2>
+    <p class="tool-subtitle">
+      Upload a public key and verify whether the signature matches the message.
+    </p>
+
+    <div class="form-group">
+      <label for="verifyMessage">Message</label>
+      <textarea id="verifyMessage" rows="6" placeholder="Enter message to verify..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="verifySignature">Signature</label>
+      <textarea id="verifySignature" rows="6" placeholder="Paste signature here..."></textarea>
+    </div>
+
+    <div class="form-group file-panel">
+      <label class="file-panel-title">Public Key</label>
+
+      <div class="file-upload-row">
+        <input type="file" id="publicKeyFile" accept=".pem,.txt">
+      </div>
+
+      <textarea
+        id="publicKeyContent"
+        class="file-textarea no-pointer-events"
+        rows="8"
+        placeholder="Upload public key file and key content will appear here..."
+        readonly
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button class="button button-primary" onclick="verifySignature()">Verify</button>
+    </div>
+
+    <div id="verifyStatus" class="status"></div>
+
+    <div class="result-block">
+      <label for="verifyResult">Verification Result</label>
+      <textarea id="verifyResult" rows="3" readonly></textarea>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+</section>
+
+<script>
+async function loadKeyToTextarea(fileInputId, textareaId) {
+  const fileInput = document.getElementById(fileInputId);
+  const textarea = document.getElementById(textareaId);
+
+  if (!fileInput.files.length) {
+    textarea.value = "";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const content = await file.text();
+  textarea.value = content;
+}
+
+document.getElementById("privateKeyFile").addEventListener("change", () => {
+  loadKeyToTextarea("privateKeyFile", "privateKeyContent");
+});
+
+document.getElementById("publicKeyFile").addEventListener("change", () => {
+  loadKeyToTextarea("publicKeyFile", "publicKeyContent");
+});
+
+async function signMessage() {
+  const message = document.getElementById("signMessage").value.trim();
+  const privateKey = document.getElementById("privateKeyContent").value.trim();
+  const status = document.getElementById("signStatus");
+  const output = document.getElementById("signatureOutput");
+
+  if (!message || !privateKey) {
+    alert("Please provide message and private key.");
+    return;
+  }
+
+  status.textContent = "Signing...";
+  output.value = "";
+
+  try {
+    const response = await fetch("{{ url_for('sign_message') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message,
+        private_key_pem: privateKey
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Signing failed");
+    }
+
+    output.value = data.signature || "";
+    status.textContent = "Signing completed.";
+
+    document.getElementById("verifyMessage").value = message;
+    document.getElementById("verifySignature").value = data.signature || "";
+  } catch (error) {
+    status.textContent = "Signing failed.";
+    alert(error.message);
+  }
+}
+
+async function verifySignature() {
+  const message = document.getElementById("verifyMessage").value.trim();
+  const signature = document.getElementById("verifySignature").value.trim();
+  const publicKey = document.getElementById("publicKeyContent").value.trim();
+  const status = document.getElementById("verifyStatus");
+  const result = document.getElementById("verifyResult");
+
+  if (!message || !signature || !publicKey) {
+    alert("Please provide message, signature, and public key.");
+    return;
+  }
+
+  status.textContent = "Verifying...";
+  result.value = "";
+
+  try {
+    const response = await fetch("{{ url_for('verify_signature') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message,
+        signature: signature,
+        public_key_pem: publicKey
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Verification failed");
+    }
+
+    result.value = data.valid ? "Signature is valid." : "Signature is invalid.";
+    status.textContent = "Verification completed.";
+  } catch (error) {
+    status.textContent = "Verification failed.";
+    alert(error.message);
+  }
+}
+</script>
+
+{% endblock %}
