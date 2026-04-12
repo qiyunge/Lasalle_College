@@ -1,18 +1,32 @@
 from pathlib import Path
 
 from vsts.core.hash_service import HashService
-from vsts.core.rsa import RSAService
+from vsts.core.rsa import RSAService as A
+from vsts.core.rsa import RSAService 
+
+from vsts.core.rsa import RSAService as B
+
+
+# assert A is B, "RSAService should be the same class regardless of import style"
+
 from vsts.core.state_transfer_service import StateTransferService, TransferResult
+
 
 
 def main():
     # Generate RSA keys
     private_key, public_key = RSAService.generate_keys()
 
+
+    BASE_DIR = Path(__file__).resolve().parent
+    DATA_DIR = BASE_DIR / "data"
+
+    source_file = DATA_DIR / "sample_data.txt"
+    encrypted_file = DATA_DIR / "encrypted_data.bin"
+    decrypted_file = DATA_DIR / "decrypted_data.txt"
+
     # Define file paths
-    source_file = Path("data/sample_data.txt")
-    encrypted_file = Path("data/encrypted_data.bin")
-    decrypted_file = Path("data/decrypted_data.txt")
+
 
     # Create a sample source file
     if not source_file.exists():
@@ -33,7 +47,7 @@ def main():
     print(f"Decrypted File: {result.decrypted_file}")
     print(f"Original Hash: {result.original_hash}")
     print(f"Decrypted Hash: {result.decrypted_hash}")
-    print(f"Integrity Check Passed: {result.intergrity_ok}")
+    print(f"Integrity Check Passed: {result.integrity_ok}")
 
 if __name__ == "__main__":
     main()  

@@ -12,16 +12,18 @@ dependencies =["cryptography",
     "python-multipart",]
 readme = "README.md"
 
+[project.scripts]
+server = "vsts.app.server:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest",]
 
 [tool.setuptools]
-include-package-data = true
+package-dir ={"" = "src"}
 
 [tool.setuptools.packages.find]
-include = ["vsts*"]
-exclude = ["tests*"]
+where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths =["tests"]

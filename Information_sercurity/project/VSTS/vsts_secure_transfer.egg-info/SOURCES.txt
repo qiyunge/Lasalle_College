@@ -3,13 +3,6 @@ pyproject.toml
 tests/test_hash.py
 tests/test_ras.py
 tests/test_tranfer_state_service.py
-vsts/__init__.py
-vsts/app/cli.py
-vsts/app/main.py
-vsts/core/__init__.py
-vsts/core/hash_service.py
-vsts/core/rsa_service.py
-vsts/core/state_transfer_service.py
 vsts_secure_transfer.egg-info/PKG-INFO
 vsts_secure_transfer.egg-info/SOURCES.txt
 vsts_secure_transfer.egg-info/dependency_links.txt

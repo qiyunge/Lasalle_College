@@ -204,7 +204,7 @@ curl -X POST http://localhost:8000/api/rsa/generate-keys \
 
 ```bash
 pip install -e .
-uvicorn main:app --reload
+uvicorn main_web:app --reload
 ```
 
 ---

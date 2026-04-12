@@ -76,8 +76,8 @@ async function generateKeys() {
 
   const data = await response.json();
 
-  document.getElementById("publicKeyOut").value = data.public_key;
-  document.getElementById("privateKeyOut").value = data.private_key;
+  document.getElementById("publicKeyOut").value = data.public_key_pem;
+  document.getElementById("privateKeyOut").value = data.private_key_pem;
 }
 
 function downloadFile(textareaId, filename) {

@@ -12,9 +12,10 @@ async def generate_keys(payload: RSAKeyPairRequest, response: Response)-> RSAKey
     """
     API endpoint to generate a new RSA key pair.
     """
+
     
     key_size = payload.key_size
     private_key_pem, public_key_pem = generate_rsa_keys_pem_service(key_size=key_size)
 
     
-    return RSAKeyPairResponse(public_key=public_key_pem, private_key=private_key_pem)
+    return RSAKeyPairResponse(public_key_pem=public_key_pem, private_key_pem=private_key_pem)

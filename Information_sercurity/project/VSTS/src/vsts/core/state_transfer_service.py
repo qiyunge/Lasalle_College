@@ -13,7 +13,7 @@ class TransferResult:
     decrypted_file: Path
     original_hash: str
     decrypted_hash: str
-    intergrity_ok:bool
+    integrity_ok:bool
 
 class StateTransferService:
 
@@ -66,7 +66,7 @@ class StateTransferService:
         original_hash = StateTransferService.encrypt_file(source_path, encrypted_path, public_key)
         decrypted_hash = StateTransferService.decrypt_file(encrypted_path, decrypted_path, private_key)
 
-        intergrity_ok = original_hash == decrypted_hash
+        integrity_ok = original_hash == decrypted_hash
 
         return TransferResult(
             source_path = source_path,
@@ -74,5 +74,5 @@ class StateTransferService:
             decrypted_file = decrypted_path,
             original_hash = original_hash,
             decrypted_hash = decrypted_hash,
-            intergrity_ok = intergrity_ok
+            integrity_ok = integrity_ok
         )   

@@ -10,133 +10,240 @@ Requires-Dist: python-multipart
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 
-# 🔐 Secure File Transfer System (RSA + Hash)
+# 🔐 RSA Crypto API
 
-## 📌 Overview
-
-This project implements a secure file transfer system with:
-
-* **RSA encryption** → ensures confidentiality
-* **SHA-256 hashing** → ensures data integrity
-
-It demonstrates a complete end-to-end secure transfer pipeline.
+A lightweight cryptographic API built with FastAPI, providing RSA-based encryption, decryption, digital signatures, and key management.
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
-* 🔑 Generate RSA key pairs
-* 🔒 Encrypt files using public key
-* 🔓 Decrypt files using private key
-* 🧾 Verify file integrity with SHA-256
-* 🔄 End-to-end transfer pipeline
-* 🧪 Automated testing with `pytest`
+* 🔑 Generate RSA key pairs (PKCS#8 PEM)
+* 🔒 Encrypt / Decrypt messages (RSA-OAEP)
+* ✍️ Sign / Verify messages (RSA-PSS)
+* 🔄 Base64 encoding for safe JSON transport
+* 📦 Clean layered architecture (route → service → core)
 
 ---
 
-## ⚙️ Workflow
+## 🛠️ Tech Stack
 
-```text
-File → Hash → Encrypt → Decrypt → Hash → Compare
+* Python 3.10+
+* FastAPI
+* Pydantic
+* cryptography
+
+---
+
+## 📂 Project Structure
+
 ```
-
-### Steps
-
-1. Read source file
-2. Compute SHA-256 hash
-3. Encrypt file using RSA public key
-4. Decrypt file using RSA private key
-5. Compute hash again
-6. Compare hashes
-
----
-
-## 🧱 Project Structure
-
-```text
-vsts/
-├── core/
-│   ├── rsa_service.py
-│   ├── hash_service.py
-│
-├── infra/
-│   ├── state_transfer_service.py
-│
-├── app/
-│   └── main.py
-│
-tests/
-├── test_rsa_service.py
-├── test_hash_service.py
-├── test_state_transfer_service.py
+app/
+├─ core/
+│   └─ rsa.py              # Pure cryptographic logic
+├─ services/
+│   └─ rsa_service.py     # Encoding / orchestration
+├─ routes/
+│   └─ rsa.py             # FastAPI endpoints
+├─ schemas/
+│   └─ rsa.py             # Pydantic models
 ```
 
 ---
 
-## ▶️ Run the Demo
+## 📡 API Endpoints
+
+### 🔑 Generate RSA Key Pair
+
+**POST** `/api/rsa/generate-keys`
+
+#### Request
+
+```json
+{
+  "key_size": 2048
+}
+```
+
+#### Response
+
+```json
+{
+  "public_key": "-----BEGIN PUBLIC KEY-----...",
+  "private_key": "-----BEGIN PRIVATE KEY-----..."
+}
+```
+
+---
+
+### 🔒 Encrypt
+
+**POST** `/api/rsa/encrypt`
+
+#### Request
+
+```json
+{
+  "plaintext": "hello world",
+  "public_key_pem": "-----BEGIN PUBLIC KEY-----..."
+}
+```
+
+#### Response
+
+```json
+{
+  "ciphertext_base64": "SGVsbG8..."
+}
+```
+
+---
+
+### 🔓 Decrypt
+
+**POST** `/api/rsa/decrypt`
+
+#### Request
+
+```json
+{
+  "ciphertext_base64": "SGVsbG8...",
+  "private_key_pem": "-----BEGIN PRIVATE KEY-----..."
+}
+```
+
+#### Response
+
+```json
+{
+  "plaintext": "hello world"
+}
+```
+
+---
+
+### ✍️ Sign
+
+**POST** `/api/rsa/sign`
+
+#### Request
+
+```json
+{
+  "message": "hello world",
+  "private_key_pem": "-----BEGIN PRIVATE KEY-----..."
+}
+```
+
+#### Response
+
+```json
+{
+  "signature_base64": "MEUCIQD..."
+}
+```
+
+---
+
+### ✅ Verify
+
+**POST** `/api/rsa/verify`
+
+#### Request
+
+```json
+{
+  "message": "hello world",
+  "signature_base64": "MEUCIQD...",
+  "public_key_pem": "-----BEGIN PUBLIC KEY-----..."
+}
+```
+
+#### Response
+
+```json
+{
+  "valid": true
+}
+```
+
+---
+
+## 🧠 Design Notes
+
+### 🔹 Serialization Strategy
+
+* Keys → PEM (text format)
+* Signature / ciphertext → Base64 (safe for JSON)
+* Internal processing → bytes
+
+```
+str (JSON)
+↓
+encode / decode
+↓
+bytes (crypto)
+```
+
+---
+
+### 🔹 Security Principles
+
+* RSA-OAEP for encryption (confidentiality)
+* RSA-PSS for signatures (authenticity & integrity)
+* Strict separation of layers:
+
+  * Core: pure cryptographic logic
+  * Service: encoding + orchestration
+  * Route: HTTP interface
+
+---
+
+## 🧪 Example (curl)
 
 ```bash
-python main.py
-```
-
-### Example Output
-
-```text
-=== Secure File Transfer Result ===
-Source file     : data/source.txt
-Encrypted file  : data/encrypted_data.bin
-Decrypted file  : data/decrypted_data.txt
-Original hash   : 8f4343...
-Decrypted hash  : 8f4343...
-Integrity check : OK ✅
+curl -X POST http://localhost:8000/api/rsa/generate-keys \
+  -H "Content-Type: application/json" \
+  -d '{"key_size": 2048}'
 ```
 
 ---
 
-## 🧪 Run Tests
+## ▶️ Running the Project
+
+
+### Using pip
 
 ```bash
-pytest
+pip install -e .
+uvicorn main:app --reload
 ```
 
 ---
 
-## 🧠 Key Concepts
+## 📖 Interactive Docs
 
-### RSA Encryption
+FastAPI automatically provides:
 
-RSA is an asymmetric cryptographic algorithm using public/private key pairs based on modular exponentiation.
-
-### SHA-256 Hashing
-
-SHA-256 produces a fixed-length digest that allows verification of data integrity.
+* Swagger UI → http://localhost:8000/docs
+* ReDoc → http://localhost:8000/redoc
 
 ---
 
-## ⚠️ Limitations
+## 📌 Future Improvements
 
-This implementation encrypts file data directly using RSA.
-
-* Suitable for **small files only**
-* Not efficient for large data
-
----
-
-## 🚀 Future Improvements
-
-* Hybrid encryption (RSA + AES-GCM)
-* Large file support
-* Streaming encryption
-* CLI interface
+* Add AES hybrid encryption
+* Add key storage / management
+* Add JWT signing support
+* Add rate limiting & auth
 
 ---
 
 ## 👤 Author
 
-**Qiyun Ge**
+**Ace (Qiyun Ge)**  
+- 📧 Email: Grantnj.ge@gmail.com  
+- 💼 LinkedIn: https://...  
+- 🐙 GitHub: https://github.com/qiyunge
 
 ---
-
-## 📄 License
-
-This project is for educational purposes.

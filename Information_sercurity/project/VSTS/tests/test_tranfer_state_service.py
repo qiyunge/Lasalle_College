@@ -1,6 +1,7 @@
 from vsts.core.state_transfer_service import StateTransferService, TransferResult
 from vsts.core.rsa import RSAService
 
+
 def test_transfer_small_file(tmp_path):
     # Generate RSA keys
     private_key, public_key = RSAService.generate_keys()
@@ -21,6 +22,6 @@ def test_transfer_small_file(tmp_path):
     assert result.encrypted_file == encrypted_file
     assert result.decrypted_file == decrypted_file
     assert result.original_hash == result.decrypted_hash
-    assert result.intergrity_ok
+    assert result.integrity_ok
     assert decrypted_file.read_text() == file_content
 
