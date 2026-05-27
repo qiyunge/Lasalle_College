@@ -1,0 +1,44 @@
+@startuml correct_the_text
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #F7FAFF
+  BorderColor #4A6FA5
+  FontColor #586E75
+  ArrowColor #4A6FA5
+}
+skinparam actor {
+ 
+  BorderColor #333333
+  
+}
+
+actor "Utilisateur(P)" as User
+actor "Moteur d'IA(S)" as AI
+
+rectangle "LangSynapse - Correction de texte" {
+
+  usecase "Rédiger un texte" as Write
+  usecase "Soumettre le texte" as Submit
+  usecase "Analyser le texte" as Analyze
+  usecase "Afficher les corrections" as Display
+  usecase "Traiter une suggestion" as Handle
+  usecase "Accepter une correction" as Accept
+  usecase "Refuser une correction" as Reject
+ 
+}
+
+User --> Write
+User --> Submit
+User --> Handle
+
+Submit ..> Analyze : <<include>>
+Submit ..> Display : <<include>>
+
+AI --> Analyze
+
+Accept .right.> Handle : <<extend>>
+Reject .left.> Handle : <<extend>>
+
+@enduml
