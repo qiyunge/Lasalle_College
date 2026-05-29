@@ -1,4 +1,427 @@
 # 从 Version Space 到 Decision Theory
+从概念学习到统计决策理论
+
+——机器学习从 Version Space 到 Risk Minimization 的演化
+
+引言
+
+机器学习的发展并不是一条单一的技术路线，而是经历了多个不同思想体系的演化。从早期的符号学习（Symbolic Learning），到统计学习理论（Statistical Learning Theory），再到现代概率机器学习（Probabilistic Machine Learning）与决策理论（Decision Theory），研究者关注的问题不断发生变化。
+
+在早期人工智能中，人们主要关心：
+
+如何从有限样本中归纳出正确的规则？
+
+这一时期的代表思想包括 Concept Learning、Rule Learning 和 Version Space 等方法，其核心目标是寻找能够解释训练数据的符号规则（Symbolic Rules）。
+
+随着统计学习理论的发展，研究重点逐渐转向：
+
+为什么模型能够泛化到未见过的数据？
+
+Vapnik 提出的 Statistical Learning Theory、VC Dimension、SRM（Structural Risk Minimization）等理论，为理解模型复杂度与泛化能力提供了数学基础。
+
+进入现代机器学习时代后，人们开始认识到：
+
+学习模型并不是最终目标，决策才是最终目标。
+
+概率机器学习将不确定性纳入统一框架，通过概率分布描述知识，通过推断（Inference）获得预测，再通过损失函数（Loss Function）与风险（Risk）评价决策质量。
+
+因此，现代机器学习的核心链条逐渐演化为：
+
+State
+↓
+Observation
+↓
+Probability Model
+↓
+Inference
+↓
+Prediction
+↓
+Decision
+↓
+Loss
+↓
+Risk
+↓
+Optimization
+
+从这个角度看：
+
+* 符号学习（Symbolic Learning）关注的是“规则”；
+* 统计学习理论（Statistical Learning Theory）关注的是“泛化”；
+* 概率机器学习（Probabilistic Machine Learning）关注的是“不确定性”；
+* 决策理论（Decision Theory）关注的是“行动”。
+
+虽然这些理论关注的问题不同，但它们都围绕同一个核心目标：
+
+从有限信息中学习，并在未来环境中做出更好的决策。
+
+本文将沿着：
+
+Concept Learning
+↓
+Version Space
+↓
+ERM
+↓
+SRM
+↓
+Bayesian Learning
+↓
+Decision Theory
+
+这一主线，梳理机器学习从符号学习到统计决策理论的发展脉络。
+统计学习与概率机器学习
+
+为什么会有两条路线？
+
+学习机器学习时，很多人会发现不同教材关注的问题似乎完全不同。
+
+例如：
+
+* Mitchell 关注 Concept Learning、Version Space；
+* Vapnik 关注 VC Dimension、SRM；
+* ESL 关注 Bias-Variance、Regularization；
+* Murphy 关注 Probability、Inference、Decision。
+
+这些内容并不矛盾，而是机器学习发展过程中不同阶段的关注重点。
+
+⸻
+
+1. Statistical Learning（统计学习）
+
+统计学习的核心问题是：
+
+如何从有限样本中学习一个能够泛化到未来数据的模型？
+
+其研究重点包括：
+
+Function Approximation
+Generalization
+Capacity
+Regularization
+Bias-Variance
+
+核心目标：
+
+学习一个好的函数
+
+即：
+
+f(x)
+
+↓
+
+y
+
+⸻
+
+统计学习主要研究：
+
+为什么训练集表现好？
+为什么测试集表现也好？
+
+也就是说：
+
+为什么模型能够泛化？
+
+⸻
+
+典型理论：
+
+* ERM（Empirical Risk Minimization）
+* SRM（Structural Risk Minimization）
+* VC Dimension
+* Bias-Variance Tradeoff
+* Regularization
+
+⸻
+
+典型模型：
+
+* Linear Regression
+* Logistic Regression
+* SVM
+* Random Forest
+* Boosting
+
+⸻
+
+2. Probabilistic Machine Learning（概率机器学习）
+
+概率机器学习关注的问题不同：
+
+如何在不确定性下进行推断和决策？
+
+其研究重点包括：
+
+Probability
+Likelihood
+Posterior
+Inference
+Uncertainty
+Decision
+
+核心目标：
+
+学习概率分布
+
+而不仅仅是学习一个函数。
+
+⸻
+
+统计学习：
+
+输入
+↓
+函数
+↓
+输出
+
+即：
+
+y = f(x)
+
+⸻
+
+概率机器学习：
+
+输入
+↓
+概率模型
+↓
+概率分布
+
+即：
+
+p(y|x)
+
+⸻
+
+例如：
+
+统计学习输出：
+
+猫
+
+⸻
+
+概率机器学习输出：
+
+P(猫)=0.9
+P(狗)=0.08
+P(狐狸)=0.02
+
+因此保留了：
+
+不确定性
+
+的信息。
+
+⸻
+
+3. 两者的关注点
+
+统计学习关注：
+
+模型为什么可靠？
+
+即：
+
+Generalization
+
+⸻
+
+概率机器学习关注：
+
+模型知道自己有多不确定吗？
+
+以及：
+
+面对不确定性如何行动？
+
+⸻
+
+因此：
+
+统计学习关注：
+
+Prediction
+
+⸻
+
+概率机器学习关注：
+
+Prediction
++
+Decision
+
+⸻
+
+4. Murphy 属于哪条路线？
+
+Kevin Murphy 的《Probabilistic Machine Learning》属于：
+
+Probabilistic Machine Learning
++
+Decision Theory
+
+路线。
+
+⸻
+
+Murphy 的核心思想：
+
+世界
+↓
+概率模型
+↓
+推断(Inference)
+↓
+预测(Prediction)
+↓
+决策(Decision)
+
+⸻
+
+其统一框架：
+
+State
+↓
+Observation
+↓
+Probability Model
+↓
+Inference
+↓
+Prediction
+↓
+Decision
+↓
+Loss
+↓
+Risk
+↓
+Optimization
+
+⸻
+
+Murphy 更关注：
+
+如何在不确定环境下做出最优决策
+
+而不是：
+
+为什么模型能够泛化
+
+⸻
+
+5. 两条路线的关系
+
+两者并不是竞争关系。
+
+实际上：
+
+Probabilistic Machine Learning
+⊃
+Statistical Learning
+
+⸻
+
+统计学习解决：
+
+如何学到一个好的模型
+
+⸻
+
+概率机器学习进一步解决：
+
+如何利用模型进行推断和决策
+
+⸻
+
+6. 机器学习的发展脉络
+
+可以将机器学习的发展理解为：
+
+Symbolic Learning
+↓
+Concept Learning
+↓
+Version Space
+↓
+ERM
+↓
+SRM
+↓
+Statistical Learning
+↓
+Bayesian Learning
+↓
+Probabilistic Machine Learning
+↓
+Decision Theory
+↓
+Reinforcement Learning
+↓
+Decision Systems
+
+⸻
+
+7. 对现代 AI 的意义
+
+对于现代分类任务：
+
+Statistical Learning
+
+已经足够强大。
+
+⸻
+
+对于：
+
+* Agent
+* Reinforcement Learning
+* Autonomous Systems
+* Robotics
+* Decision Systems
+* Robustness Engineering
+
+则必须进一步考虑：
+
+Uncertainty
+Decision
+Risk
+
+因此：
+
+Probability
++
+Decision Theory
+
+逐渐成为现代 AI 系统的核心框架。
+
+⸻
+
+一句话总结
+
+统计学习研究：
+
+如何学到一个泛化能力好的模型。
+
+概率机器学习研究：
+
+如何在不确定性下进行推断与决策。
+
+Murphy 的体系属于：
+
+Probability
++
+Inference
++
+Decision Theory
+
+路线，其最终目标不是预测本身，而是利用预测支持最优决策。
 
 ## 1. Concept Learning（概念学习）
 
