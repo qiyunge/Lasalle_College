@@ -1,0 +1,17 @@
+name: face-recognition-app
+
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - scikit-learn
+  - opencv
+  - matplotlib
+  - jupyter
+  - pip
+
+  - pip:
