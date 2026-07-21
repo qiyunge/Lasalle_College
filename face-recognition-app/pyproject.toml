@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "face-recognition-app"
+version = "0.1.0"
+description = "Real-time face detection and ANN-based recognition portfolio project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115",
+    "joblib>=1.3",
+    "jinja2>=3.1",
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "scikit-learn>=1.3",
+    "uvicorn[standard]>=0.30",
+]
+
+[project.scripts]
+face-detect = "face_recognition_app.capture.webcam_capture:main"
+face-preprocess = "face_recognition_app.preprocessing.preprocess:main"
+face-split = "face_recognition_app.preprocessing.dataset_split:main"
+face-train = "face_recognition_app.training.train:main"
+face-evaluate = "face_recognition_app.training.evaluate:main"
+face-recognize = "face_recognition_app.inference.realtime_recognition:main"
+face-app = "face_recognition_app.server:main"
+
+[project.optional-dependencies]
+yolo = [
+    "ultralytics>=8.0",
+]
+dev = [
+    "build>=1.2",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["face_recognition_app*"]
+
+[tool.setuptools.package-data]
+"face_recognition_app.presentation.web" = [
+    "templates/*.html",
+    "static/css/*.css",
+    "static/js/*.js",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --strict-config"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88

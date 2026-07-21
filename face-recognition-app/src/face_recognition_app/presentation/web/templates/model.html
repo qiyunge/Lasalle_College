@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Model · Face Recognition Console{% endblock %}
+
+{% block content %}
+  <!-- <header class="page-header compact">
+    <div>
+      <p class="eyebrow"><span></span> MODEL RUNTIME</p>
+      <h1>Model overview</h1>
+    </div>
+    <p class="subtitle">Inspect the detector and classifier loaded by the current inference process.</p>
+  </header> -->
+
+  <section class="panel model-grid">
+    <div><span>Runtime status</span><strong id="model-ready">Checking</strong></div>
+    <div><span>Face detector</span><strong id="model-detector">—</strong></div>
+    <div><span>Unknown threshold</span><strong id="model-threshold">—</strong></div>
+    <div><span>Known identities</span><strong id="model-class-count">—</strong></div>
+  </section>
+  <section class="panel section-panel">
+    <div class="section-title"><div><p class="eyebrow">CLASSES</p><h2>Recognized identities</h2></div></div>
+    <div class="chips" id="model-classes"><p>Loading classes from the API…</p></div>
+  </section>
+  <section class="panel section-panel">
+    <div class="section-title"><div><p class="eyebrow">ARTIFACT</p><h2>Classifier path</h2></div></div>
+    <code id="model-path">—</code>
+    <p class="error-message" id="model-error" hidden></p>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', path='js/model.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}About · Face Recognition Console{% endblock %}
+
+{% block content %}
+  <!-- <header class="page-header compact">
+    <div>
+      <p class="eyebrow"><span></span> HOW IT WORKS</p>
+      <h1>From dataset<br><em>to deployment.</em></h1>
+    </div>
+    <p class="subtitle">A complete multi-class recognition pipeline, built for transparent local inference.</p>
+  </header> -->
+  <section class="panel section-panel">
+    <div class="section-title"><div><p class="eyebrow">PIPELINE</p><h2>Five clear stages</h2></div></div>
+    <ol class="steps">
+      <li><b>01</b><div><strong>Capture</strong><span>Detect and collect labeled face images for each identity.</span></div></li>
+      <li><b>02</b><div><strong>Prepare</strong><span>Normalize image dimensions, channels, and pixel values.</span></div></li>
+      <li><b>03</b><div><strong>Train</strong><span>Tune the MLP classifier with grid or randomized search.</span></div></li>
+      <li><b>04</b><div><strong>Evaluate</strong><span>Measure performance with a held-out test set and confusion matrix.</span></div></li>
+      <li><b>05</b><div><strong>Deploy</strong><span>Serve real-time predictions through FastAPI and the browser.</span></div></li>
+    </ol>
+  </section>
+{% endblock %}

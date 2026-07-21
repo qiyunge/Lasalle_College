@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Face Recognition Console{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    {% block head %}{% endblock %}
+  </head>
+  <body data-api-base="{{ api_base_url }}">
+    <nav class="navbar">
+      <div class="nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span class="brand-copy"><strong>Face</strong><small>Recognition App</small></span>
+        </a>
+        <div class="nav-links">
+          <a class="{% if active_page == 'camera' %}active{% endif %}" href="/">Live</a>
+          <a class="{% if active_page == 'model' %}active{% endif %}" href="/model">Model</a>
+          <a class="{% if active_page == 'about' %}active{% endif %}" href="/about">About</a>
+          <a class="api-link" href="{{ api_base_url }}/api/docs">API Docs <span>↗</span></a>
+        </div>
+      </div>
+    </nav>
+    <main class="shell">{% block content %}{% endblock %}</main>
+    <footer>
+      <span>Face Recognition Console</span>
+      <span>ATOM AI support</span>
+    </footer>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

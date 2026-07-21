@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Face Recognition Console{% endblock %}
+
+{% block content %}
+  <!-- <header class="page-header">
+    <div>
+      <p class="eyebrow"><span></span> LIVE WORKSPACE</p>
+      <h1>Face recognition,<br><em>in real time.</em></h1>
+    </div>
+    <p class="subtitle">Run private, multi-class face recognition directly through your local inference service.</p>
+  </header> -->
+
+  <section class="workspace-grid">
+    <article class="camera-card">
+      <div class="card-heading">
+        <div><span class="live-dot"></span><strong>Camera feed</strong></div>
+        <span class="privacy-label">Local processing</span>
+      </div>
+      <div class="stage">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+        <div id="empty-state" class="empty-state">
+          <span class="camera-icon"></span>
+          <strong>Your camera is off</strong>
+          <p>Start the camera to preview and recognize faces.</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="start"><span class="button-icon">●</span> Start camera</button>
+        <button id="stop" class="secondary" disabled>Stop</button>
+        <span id="status" class="status">Checking inference service…</span>
+      </div>
+    </article>
+
+    <aside class="side-panel">
+      <div class="side-heading">
+        <p class="eyebrow">SESSION</p>
+        <h2>Recognition status</h2>
+      </div>
+      <div class="metric-list">
+        <div class="metric">
+          <span class="metric-icon service"></span>
+          <div><span>Model status</span><strong id="model-status">Checking</strong></div>
+        </div>
+        <div class="metric">
+          <span class="metric-icon faces"></span>
+          <div><span>Faces in frame</span><strong id="face-count">0</strong></div>
+        </div>
+        <div class="metric classes-metric">
+          <span class="metric-icon labels"></span>
+          <div><span>Known identities</span><strong id="classes">—</strong></div>
+        </div>
+      </div>
+      <div class="privacy-note">
+        <span>◆</span>
+        <p><strong>Privacy first</strong>Your frames are processed by this server and are not stored.</p>
+      </div>
+    </aside>
+  </section>
+  <canvas id="capture" hidden></canvas>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', path='js/camera.js') }}" defer></script>
+{% endblock %}
