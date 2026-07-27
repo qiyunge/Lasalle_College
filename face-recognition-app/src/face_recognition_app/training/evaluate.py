@@ -90,6 +90,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(
         f"Evaluation complete: {metrics['test_samples']} samples; "
         f"accuracy={metrics['accuracy']:.4f}"
+        
     )
     return 0
 
