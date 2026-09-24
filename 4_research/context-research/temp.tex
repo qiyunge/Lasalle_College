@@ -1,0 +1,308 @@
+Adaptive Context Engineering for Agentic Systems
+Constructing Effective Working Contexts for Frozen Language Models
+1. Background and Motivation
+
+Large language models acquire knowledge, representations, and computational capabilities through pre-training and post-training. After deployment, model parameters are typically frozen:
+
+$$ \theta=\text{constant} $$
+
+However, a frozen model does not produce useful behavior independently. At each inference step, its behavior depends strongly on the context provided to it:
+
+$$ y_t=f_\theta(C_t) $$
+
+where \(C_t\) may include instructions, conversation history, examples, retrieved knowledge, memory, tool definitions, tool outputs, environmental state, and intermediate artifacts.
+
+The information encoded in a trained model should therefore not simply be viewed as an unstructured information store. Training creates distributed internal representations and computational structures whose behavior depends on the model architecture, training data, training objectives, and post-training methods.
+
+Having a capability encoded in the model does not guarantee that the capability will be expressed in every inference.
+
+Instead:
+
+$$ \boxed{ \text{Learned Capability} + \text{Appropriate Context} \rightarrow \text{Elicited Behavior} } $$
+
+This makes the construction of context an important part of the AI system itself.
+
+2. Context as an Inference-Time Program
+
+One useful perspective is to regard the context supplied to a frozen model as an inference-time program.
+
+The analogy is not exact, but conceptually:
+
+$$ \text{Frozen Model} \approx \text{Learned Computational Runtime} $$
+
+while:
+
+$$ \text{Context} \approx \text{Runtime Program + Data + State} $$
+
+and:
+
+$$ f_\theta(C_t) \approx \text{Program Execution} $$
+
+A prompt is therefore not merely a question written in natural language.
+
+In modern agentic systems, it can contain:
+
+$$ C_t= \{ \text{instructions}, \text{task state}, \text{memory}, \text{evidence}, \text{examples}, \text{tools}, \text{observations}, \text{constraints} \} $$
+
+These elements determine which information is available to the model and how its learned capabilities are elicited during the current inference.
+
+This provides a broader interpretation of context engineering:
+
+$$ \boxed{ \text{Context Engineering} = \text{Capability Elicitation} + \text{Runtime Harness} } $$
+
+The context simultaneously provides capabilities and constrains model behavior.
+
+3. Context Engineering in Agentic Systems
+
+This becomes particularly important for agentic systems.
+
+Unlike a simple chatbot performing isolated requests, an agent may continuously interact with an environment:
+
+$$ \text{Observe} \rightarrow \text{Reason} \rightarrow \text{Act} \rightarrow \text{Observe} \rightarrow \cdots $$
+
+During this process, information continuously accumulates:
+
+$$ H_t= \{ \text{conversation}, \text{actions}, \text{tool results}, \text{documents}, \text{code}, \text{logs}, \text{errors}, \text{previous decisions}, \ldots \} $$
+
+Eventually:
+
+$$ |H_t| \gg \text{available context budget} $$
+
+The agent therefore cannot simply place its complete information space into every model invocation.
+
+The agent harness must decide what information should be presented to the model at each step:
+
+$$ H_t \xrightarrow{\text{Context Policy }\pi} C_t \xrightarrow{f_\theta} y_t $$
+
+This makes context construction a runtime systems problem.
+
+4. Analogy with Computer Memory Systems
+
+A useful analogy can be made with conventional computer memory systems.
+
+A computer may have a very large amount of persistent information, but only a limited subset becomes the working set required by the current computation.
+
+Similarly:
+
+$$ \text{Large Information Space} \xrightarrow{\text{Context Management}} \boxed{\text{Working Context}} \xrightarrow{\text{LLM}} \text{Output / Action} $$
+
+Conversation history, external memory, summaries, vector databases, repositories, files, and tool observations can be considered different information sources from which a working context is constructed.
+
+Therefore:
+
+$$ \boxed{ \text{Context Window Capacity} \neq \text{Effective Working Context} } $$
+
+Increasing the maximum context window does not necessarily eliminate the context-management problem.
+
+The central question becomes:
+
+Given all available information, what should enter the model's limited working context at the current inference step?
+
+5. Why the Problem Matters Now
+
+This problem is increasingly important because modern AI applications are moving from short conversations toward long-running agentic systems.
+
+Coding agents provide a particularly clear example.
+
+Systems such as Codex, Claude Code, OpenClaw, and similar agentic development environments operate over repositories, source files, documentation, terminal outputs, test results, execution traces, previous attempts, plans, and user conversations.
+
+The available information can quickly become much larger than what should reasonably be included in every inference.
+
+Furthermore, different workloads require different forms of context:
+
+$$ C_{\text{chat}} \neq C_{\text{coding}} \neq C_{\text{reasoning}} \neq C_{\text{multimodal}} $$
+
+A conversational model may require user history and memory, while a coding agent may require repository structure, relevant code, test results, and execution state.
+
+A multimodal generation system may require textual conditions, reference images, masks, spatial controls, or previous generated artifacts.
+
+This suggests that:
+
+$$ \boxed{ \text{There may be no universally optimal context strategy.} } $$
+
+Context construction may need to depend on the model, task, environment, and current agent state.
+
+6. Existing Research
+6.1 Lost in the Middle
+
+Lost in the Middle: How Language Models Use Long Contexts showed that the presence of information inside a context window does not guarantee that the model will use it equally effectively.
+
+In several experiments, information placed near the beginning or end of a long context produced better performance than information placed in the middle.
+
+This produced the characteristic U-shaped behavior:
+
+$$ \text{Beginning} \uparrow \qquad \text{Middle} \downarrow \qquad \text{End} \uparrow $$
+
+This leads to an important distinction:
+
+$$ \boxed{ \text{Availability} \neq \text{Accessibility} \neq \text{Utilization} } $$
+
+Information may be present in the context but still fail to contribute effectively to the model's output.
+
+However, these experiments were performed on earlier generations of language models. Modern models use different training methods and substantially larger context windows.
+
+An important open empirical question is therefore:
+
+Does the Lost-in-the-Middle effect still persist in current-generation models?
+
+6.2 MemGPT
+
+MemGPT approaches the problem from a systems perspective by comparing LLM context management with virtual memory in operating systems.
+
+Instead of requiring all information to remain in the active context, information can move between the limited context window and larger external memory.
+
+This introduces an important idea:
+
+$$ \boxed{ \text{Context should be actively managed.} } $$
+
+The context window becomes a working memory rather than the complete information store.
+
+6.3 Long-Term Memory Evaluation
+
+More recent benchmarks such as LongMemEval-V2 investigate how agents retrieve useful evidence from very large collections of previous interaction trajectories.
+
+Such research also demonstrates that context management involves multiple objectives.
+
+A system must consider:
+
+$$ \text{Task Quality}, \qquad \text{Context Size}, \qquad \text{Latency}, \qquad \text{Cost} $$
+
+Therefore, retrieving or including more information is not automatically better.
+
+7. Research Questions
+
+This project proposes to investigate context engineering primarily as an empirical AI systems problem, rather than as a new model-training problem.
+
+RQ1 — Does Lost-in-the-Middle still exist?
+
+The first objective is to reproduce and extend long-context position experiments using current-generation language models.
+
+The experiment will vary two major variables:
+
+$$ \boxed{ \text{Context Length} \times \text{Relevant Information Position} } $$
+
+For example:
+
+$$ p\in \{10\%,25\%,50\%,75\%,90\%\} $$
+
+across multiple context lengths.
+
+The resulting relationship can be represented as:
+
+$$ Q=f(L,p) $$
+
+where \(Q\) represents task quality, \(L\) context length, and \(p\) relevant-information position.
+
+This experiment will determine whether the previously reported U-shaped utilization pattern remains significant in modern models.
+
+RQ2 — Is more context always better?
+
+The second question examines whether providing the full available context actually produces better results than selective context construction.
+
+Several common strategies will be compared:
+
+$$ \text{Full History} $$ $$ \text{Fixed Window} $$ $$ \text{Summary} $$ $$ \text{Relevance Retrieval} $$ $$ \text{Hybrid Context} $$
+
+The objective is to determine under which conditions selective context can maintain or improve task quality while reducing context size.
+
+RQ3 — Can context strategy be adaptive?
+
+If different workloads and states benefit from different context strategies, the next question is:
+
+Can a lightweight policy dynamically select how the working context should be constructed?
+
+The problem can be formulated as:
+
+$$ C_t= \pi( M, T_t, H_t, S_t, K, B ) $$
+
+where:
+
+\(M\) represents model characteristics,
+\(T_t\) the current task,
+\(H_t\) historical information,
+\(S_t\) current agent state,
+\(K\) external knowledge or memory, and
+\(B\) the available context budget.
+
+The policy \(\pi\) produces:
+
+$$ \boxed{C_t=\text{Working Context}} $$
+
+which is then executed by the frozen model.
+
+8. Proposed Method
+
+The initial research will not use reinforcement learning to train a separate context-management model.
+
+This is intentional.
+
+Introducing a learned manager at the beginning would add another model and additional variables, making it more difficult to determine why a particular strategy succeeds or fails.
+
+Instead, the project will focus first on implementation, controlled experiments, and reproducibility.
+
+The model parameters remain constant:
+
+$$ \boxed{\theta=\text{frozen}} $$
+
+while context construction becomes the primary experimental variable:
+
+$$ \boxed{C_t=\text{variable}} $$
+
+The initial adaptive policy can use simple and interpretable signals such as context length, task type, retrieval relevance, current agent state, and token budget.
+
+More sophisticated learned policies could be investigated later if experimental evidence shows that they are necessary.
+
+9. Evaluation
+
+The objective is not simply to maximize benchmark accuracy.
+
+Context engineering is fundamentally a multi-objective systems problem.
+
+The experiments will therefore measure:
+
+$$ \boxed{ \text{Task Quality} } $$
+
+together with:
+
+$$ \boxed{ \text{Input Tokens}, \text{Latency}, \text{Inference Cost} } $$
+
+The optimization problem can be expressed conceptually as:
+
+$$ \pi^* = \arg\max_\pi Q\left( f_\theta(\pi(H_t)) \right) $$
+
+subject to:
+
+$$ |\pi(H_t)|\le B $$
+
+or, including system cost:
+
+$$ \boxed{ \max_\pi [ Q(\pi) -\lambda C_{\text{tokens}}(\pi) -\mu C_{\text{latency}}(\pi) ] } $$
+
+The goal is therefore not necessarily to find the context strategy with the highest possible quality regardless of cost, but to study the quality–cost frontier.
+
+10. Expected Contribution
+
+This project does not aim to train a new foundation model.
+
+Instead, it studies what happens around a frozen model at inference time.
+
+Its expected contributions are:
+
+An empirical re-evaluation of long-context utilization and the Lost-in-the-Middle effect in modern LLMs.
+A reproducible comparison of common context-management strategies.
+An implementation of a lightweight adaptive working-context policy.
+An evaluation of the trade-off between task quality, context size, latency, and cost.
+
+The central hypothesis can be summarized as:
+
+$$ \boxed{ \text{More Context} \neq \text{Better Context} } $$
+
+and the broader systems perspective is:
+
+$$ \boxed{ \text{Frozen Model} + \text{Context Construction} + \text{Agent Harness} \rightarrow \text{Effective Behavior} } $$
+
+Therefore, the long-term problem is not only how to build models with larger context windows.
+
+It is:
+
+How should an AI system construct the right working context for the right model, task, and state?
