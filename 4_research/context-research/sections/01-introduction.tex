@@ -144,134 +144,6 @@ structures:
 This suggests that a single static context-management strategy may not
 be optimal for every model, task, and system state.
 
-\section{Background}
-
-\subsection{Working Context}
-A model may technically support a large context window, but context
-window capacity and effective context utilization are different
-concepts.
-
-It is useful to distinguish three levels:
-
-\[
-\boxed{
-    \text{Availability}
-    \neq
-    \text{Accessibility}
-    \neq
-    \text{Utilization}
-}
-\]
-
-Information may be present in the context, but the model may not access
-or use it effectively when producing the final result.
-
-Therefore, this project uses the term \emph{working context} to refer
-to the subset of available information deliberately constructed for
-the current inference.
-
-The central problem becomes
-
-\[
-    \text{Available Information}
-    \xrightarrow{\text{Context Selection}}
-    \text{Working Context}
-    \xrightarrow{\text{Model}}
-    \text{Behavior}.
-\]
-
-\subsection{Memory Hierarchy Analogy}
-This problem has similarities to memory management in conventional
-computer systems.
-
-A computer system may have a large amount of persistent information,
-but only a limited working set is required for the current computation.
-Different levels of the memory hierarchy balance capacity, access cost,
-and performance.
-
-Similarly, an agent may have access to a large information space
-containing complete interaction histories, external memory, documents,
-repositories, and previous trajectories. Only a subset needs to be
-placed into the model's current context.
-
-Conceptually,
-
-\[
-    \text{Large Information Space}
-    \rightarrow
-    \boxed{\text{Working Context}}
-    \rightarrow
-    \text{Inference}.
-\]
-
-The analogy is not intended to claim that an LLM context window is
-equivalent to RAM. Instead, it provides a systems perspective:
-context is a limited runtime resource whose contents must be actively
-managed.
-
-\section{Related Work}
-Several recent studies motivate this research.
-
-\subsection{Lost in the Middle}
-
-\emph{Lost in the Middle: How Language Models Use Long Contexts}
-demonstrated that information located inside a context window is not
-necessarily utilized uniformly.
-
-In the evaluated models, performance was often higher when relevant
-information appeared near the beginning or end of the context and
-lower when it appeared in the middle, producing a U-shaped pattern.
-
-This suggests that
-
-\[
-    \text{Context Capacity}
-    \neq
-    \text{Effective Context Utilization}.
-\]
-
-However, the study evaluated an earlier generation of language models.
-Modern models have substantially larger context windows and different
-training and post-training methods. Whether the same U-shaped effect
-remains significant in current models is therefore an empirical
-question.
-
-
-\subsection{MemGPT}
-
-MemGPT approaches context management through an analogy with virtual
-memory in operating systems.
-
-Instead of keeping all information inside the active context, the
-system manages information between the model's limited context window
-and larger external memory.
-
-This work demonstrates that memory and context management can be
-treated as explicit components of an agent architecture rather than
-only as prompt-design techniques.
-
-
-\subsection{Long-Term Agent Memory Evaluation}
-
-Recent work such as LongMemEval-V2 extends the problem to long-running
-agents with very large collections of historical interaction
-trajectories.
-
-Such work emphasizes not only whether useful information can be
-recovered, but also the cost of constructing and processing the
-resulting context.
-
-This motivates evaluation across several dimensions:
-
-\[
-    \text{Quality},
-    \qquad
-    \text{Tokens},
-    \qquad
-    \text{Latency},
-    \qquad
-    \text{Cost}.
-\]
 
 \section{Research Gap}
 
@@ -283,7 +155,7 @@ However, several questions remain relevant as models and agent
 architectures continue to evolve.
 
 First, it is unclear whether the U-shaped
-\emph{Lost-in-the-Middle} effect remains significant in current
+\emph{Lost-in-the-Middle} \cite{lost-in-the-middle} \cite{hsieh-etal-2024-found} \cite{zhang2024found} effect remains significant in current
 generation language models and how this effect changes with context
 length.
 
@@ -375,5 +247,20 @@ How should an agentic system construct the right working context for
 the right model, task, and state?
 \end{quote}
 
+\section{Research Questions}
+The proposed research investigates the following questions:
 
-
+\begin{enumerate}
+    \item \textbf{RQ1}
+    \begin{quote}
+        How does the position of relevant information within the context affect its utilization by modern LLMs?
+    \end{quote}
+    \item \textbf{RQ2}
+    \begin{quote}
+        How does the length of the context influence the relationship between information position and model performance?
+    \end{quote}
+    \item \textbf{RQ3}
+    \begin{quote}
+        How does information interference from semantically similar distractors affect the utilization of relevant information at different positions?
+    \end{quote}
+\end{enumerate}

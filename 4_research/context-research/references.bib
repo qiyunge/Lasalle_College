@@ -1,0 +1,56 @@
+@article{lost-in-the-middle,
+    title = "Lost in the Middle: How Language Models Use Long Contexts",
+    author = "Liu, Nelson F.  and
+      Lin, Kevin  and
+      Hewitt, John  and
+      Paranjape, Ashwin  and
+      Bevilacqua, Michele  and
+      Petroni, Fabio  and
+      Liang, Percy",
+    journal = "Transactions of the Association for Computational Linguistics",
+    volume = "12",
+    year = "2024",
+    address = "Cambridge, MA",
+    publisher = "MIT Press",
+    url = "https://aclanthology.org/2024.tacl-1.9/",
+    doi = "10.1162/tacl_a_00638",
+    pages = "157--173",
+    abstract = "While recent language models have the ability to take long contexts as input, relatively little is known about how well they use longer context. We analyze the performance of language models on two tasks that require identifying relevant information in their input contexts: multi-document question answering and key-value retrieval. We find that performance can degrade significantly when changing the position of relevant information, indicating that current language models do not robustly make use of information in long input contexts. In particular, we observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models. Our analysis provides a better understanding of how language models use their input context and provides new evaluation protocols for future long-context language models."
+}
+
+@inproceedings{hsieh-etal-2024-found,
+    title = "Found in the middle: Calibrating Positional Attention Bias Improves Long Context Utilization",
+    author = "Hsieh, Cheng-Yu  and
+      Chuang, Yung-Sung  and
+      Li, Chun-Liang  and
+      Wang, Zifeng  and
+      Le, Long  and
+      Kumar, Abhishek  and
+      Glass, James  and
+      Ratner, Alexander  and
+      Lee, Chen-Yu  and
+      Krishna, Ranjay  and
+      Pfister, Tomas",
+    editor = "Ku, Lun-Wei  and
+      Martins, Andre  and
+      Srikumar, Vivek",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2024",
+    month = aug,
+    year = "2024",
+    address = "Bangkok, Thailand",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.findings-acl.890/",
+    doi = "10.18653/v1/2024.findings-acl.890",
+    pages = "14982--14995",
+    abstract = "Large language models (LLMs), even when specifically trained to process long input contexts, struggle to capture relevant information located in the middle of their input. This phenomenon has been known as the lost-in-the-middle problem. In this work, we make three contributions. First, we set out to understand the factors that cause this phenomenon. In doing so, we establish a connection between lost-in-the-middle to LLMs' intrinsic attention bias: LLMs exhibit an U-shaped attention bias where the tokens at the beginning and at the end of its input receive higher attention, regardless of their relevance. Second, we mitigate this positional bias through a calibration mechanism, found-in-the-middle, that allows the model to attend to contexts faithfully according to their relevance, even though when they are in the middle. Third, we show found-in-the-middle not only achieves better performance in locating relevant information within a long context, but also eventually leads to improved retrieval-augmented generation (RAG) performance across various tasks, outperforming existing methods by up to 10 percentage point. These findings open up future directions in understanding LLM attention bias and its potential consequences."
+}
+
+@inproceedings{zhang2024found,
+author = {Zhang, Zhenyu (Allen) and Chen, Runjin and Liu, Shiwei and Yao, Zhewei and Ruwase, Olatunji and Chen, Beidi and Wu, Xiaoxia and Wang, Zhangyang},
+title = {Found in the Middle: How Language Models Use Long Contexts Better via Plug-and-Play Positional Encoding},
+booktitle = {NeurIPS 2024},
+year = {2024},
+month = {March},
+abstract = {This paper aims to overcome the"lost-in-the-middle"challenge of large language models (LLMs). While recent advancements have successfully enabled LLMs to perform stable language modeling with up to 4 million tokens, the persistent difficulty faced by most LLMs in identifying relevant information situated in the middle of the context has not been adequately tackled. To address this problem, this paper introduces Multi-scale Positional Encoding (Ms-PoE) which is a simple yet effective plug-and-play approach to enhance the capacity of LLMs to handle the relevant information located in the middle of the context, without fine-tuning or introducing any additional overhead. Ms-PoE leverages the position indice rescaling to relieve the long-term decay effect introduced by RoPE, while meticulously assigning distinct scaling ratios to different attention heads to preserve essential knowledge learned during the pre-training step, forming a multi-scale context fusion from short to long distance. Extensive experiments with a wide range of LLMs demonstrate the efficacy of our approach. Notably, Ms-PoE achieves an average accuracy gain of up to 3.8 on the Zero-SCROLLS benchmark over the original LLMs. Code are available at https://github.com/VITA-Group/Ms-PoE.},
+url = {https://www.microsoft.com/en-us/research/publication/found-in-the-middle-how-language-models-use-long-contexts-better-via-plug-and-play-positional-encoding/},
+}
