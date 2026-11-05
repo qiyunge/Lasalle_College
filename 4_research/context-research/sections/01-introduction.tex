@@ -1,33 +1,41 @@
-\section{Introduction}
-Modern language models acquire knowledge and capabilities through
-pre-training and post-training. After deployment, however, their
-parameters are typically frozen. The behavior observed at inference
-time therefore depends not only on what has been learned by the model,
-but also on the context dynamically constructed around each inference.
 
-A simplified view is
+\section{Introduction}
+\label{sec:introduction}
+
+Modern large language models (LLMs) acquire knowledge and capabilities through
+pre-training and post-training. During inference, their model parameters are
+typically fixed, while the input context can vary substantially across tasks
+and interactions.
+
+Consequently, model performance depends not only on the capabilities learned
+during training, but also on whether relevant information in the provided
+context can be effectively utilized.
+
+A simplified view of inference is
 
 \[
     y_t = f_{\theta}(C_t),
 \]
 
-where $\theta$ represents the frozen model parameters and $C_t$
-represents the context available at inference time.
+where $\theta$ represents the fixed model parameters, $C_t$ represents the
+context provided at inference time, and $y_t$ represents the model output.
 
-This project studies the construction of $C_t$ as a systems problem.
-Rather than training a new model, the objective is to investigate how
-a frozen model can be provided with an effective working context under
-a limited context budget.
+This distinction motivates a fundamental question: even when relevant
+information is available within the model's context window, can the model
+reliably use it?
 
-\subsection{From Model capabilities to effective behavior}
-Information learned by a language model should not be viewed simply as
-an unstructured information store. Training produces distributed
-representations and computational capabilities that depend on the
-training data, model architecture, training objectives, and
-post-training process.
+The present study approaches this question through controlled experiments on
+information position, context length, and potentially information interference.
 
-However, the existence of a capability in the model does not guarantee
-that it will be expressed in every inference.
+\subsection{From Model Capabilities to Effective Behavior}
+
+The knowledge and capabilities acquired during training are represented through
+the model's learned parameters. However, possessing a capability does not
+guarantee that it will be expressed consistently under every inference
+condition.
+
+In particular, the accessibility and organization of information within the
+context may influence the model's ability to produce a correct response.
 
 Conceptually,
 
@@ -39,58 +47,60 @@ Conceptually,
     \text{Effective Behavior}.
 \]
 
-This distinction between \emph{having} a capability and
-\emph{eliciting} that capability motivates the study of context
-engineering.
+This relationship is a conceptual motivation rather than a deterministic
+guarantee of performance.
 
+It highlights the distinction between the information available to a model and
+the information that the model can effectively utilize.
 
-\subsection{Context as an Inference-Time Program}
+Therefore, evaluating context utilization requires more than measuring the
+maximum number of tokens a model can accept.
 
-A useful perspective is to view context as an inference-time program
-for a frozen model.
+\subsection{Context Engineering and Information Utilization}
 
-The analogy is not exact, but the frozen model can be regarded as a
-learned computational system, while the context provides the
-instructions, data, state, constraints, and available resources for a
-particular execution.
+Context engineering concerns the selection, organization, and presentation of
+information supplied to a model during inference.
 
-A modern context may contain
-
-\[
-C_t =
-\{
-    \text{instructions},
-    \text{history},
-    \text{memory},
-    \text{evidence},
-    \text{tools},
-    \text{observations},
-    \text{state}
-\}.
-\]
-From this perspective, prompt engineering is only one part of a broader
-context-engineering problem.
-
-Context engineering serves two related purposes:
+A context may contain instructions, conversation history, retrieved evidence,
+tool outputs, and other task-relevant information:
 
 \[
-\boxed{
-    \text{Capability Elicitation}
-    +
-    \text{Runtime Harness}
-}
+    C_t =
+    \{
+        \text{instructions},
+        \text{history},
+        \text{evidence},
+        \text{tools},
+        \text{state}
+    \}.
 \]
 
-It provides information and capabilities to the model while also
-guiding and constraining how the model interacts with its environment.
+While context engineering addresses how information is provided, context
+utilization concerns how effectively the model uses that information to perform
+a task.
 
-\subsection{Context Engineering in Agentic Systems}
-The problem becomes more important in agentic systems because an agent
-continuously accumulates information while interacting with its
-environment.
+These are related but distinct problems. A system may successfully include the
+necessary evidence in its context without obtaining the correct answer.
+
+For example, relevant evidence may appear near the beginning, middle, or end of
+a long input. Its relative position may influence retrieval accuracy even when
+the evidence itself remains unchanged.
+
+Similarly, increasing the total context length may introduce additional
+irrelevant information and alter the model's ability to locate and use the
+target evidence.
+
+This motivates studying context utilization as an empirical property of model
+behavior rather than assuming that all information within the context window is
+equally accessible.
+
+\subsection{Motivation from Agentic Systems}
+
+The importance of effective context utilization becomes particularly apparent
+in agentic systems, where models interact with external tools and accumulate
+information over multiple steps.
 
 A simplified agent loop can be represented as
-
 \[
     \text{Observe}
     \rightarrow
@@ -101,166 +111,86 @@ A simplified agent loop can be represented as
     \text{Observe}.
 \]
 
-During long-running execution, conversation history, retrieved
-documents, source code, tool outputs, execution traces, errors, and
-previous decisions continuously accumulate.
+During long-running execution, conversation history, retrieved documents,
+source code, tool outputs, and previous decisions may accumulate beyond the
+available context budget.
 
-Let $H_t$ represent all information available to the system. In a
-long-running agent,
+Let $H_t$ represent the information available to the system and $C_t$ the
+working context selected for a particular inference. In many long-running
+settings,
 
 \[
-    |H_t| \gg |C_t|.
+    |H_t| > |C_t|.
 \]
 
-The agent harness must therefore construct a smaller working context:
+A context-construction policy $\pi$ may therefore select information for the
+model:
 
 \[
     H_t
     \xrightarrow{\pi}
     C_t
     \xrightarrow{f_{\theta}}
-    y_t,
+    y_t.
 \]
 
-where $\pi$ represents a context-construction policy.
+However, selecting relevant information is only part of the problem. The model
+must also be able to utilize the selected information effectively.
 
-This problem is already visible in modern coding agents and agentic
-applications, where repositories, terminal outputs, tool results,
-documentation, and interaction histories compete for limited context.
+Understanding how information position and context length influence model
+performance may therefore inform the design of future context-selection and
+context-management strategies.
 
-Furthermore, different workloads may require different context
-structures:
+The present study does not attempt to implement or optimize such a strategy.
+Agentic systems instead provide a practical motivation for investigating the
+underlying behavior of long-context language models.
+
+\subsection{Research Objective and Scope}
+
+The broader objective of this research is to investigate how three factors
+influence effective context utilization:
+
+\begin{itemize}
+    \item The position of relevant evidence within the context.
+    \item The total length of the context.
+    \item Interference from semantically similar distractors.
+\end{itemize}
+
+The primary experimental investigation focuses on the relationship between
+evidence position and context length, while maintaining a controlled baseline
+distractor condition.
+
+Specifically, the study examines whether positional performance differences
+persist in modern LLMs and whether their magnitude changes as context length
+increases.
+
+A potential extension will investigate whether semantically similar but
+irrelevant information further affects this relationship, depending on
+available time and computational resources.
+
+The study uses fixed model parameters and controlled retrieval tasks to examine
+these effects. It does not propose a new language model or a complete adaptive
+context-management system.
+
+The central motivation can be summarized by two distinctions:
 
 \[
-    C_{\text{chat}}
-    \neq
-    C_{\text{reasoning}}
-    \neq
-    C_{\text{coding}}
-    \neq
-    C_{\text{multimodal}}.
+    \boxed{
+        \text{More Context}
+        \not\equiv
+        \text{Better Context}
+    }
 \]
 
-This suggests that a single static context-management strategy may not
-be optimal for every model, task, and system state.
-
-
-\section{Research Gap}
-
-Existing research demonstrates that long contexts may be difficult to
-use effectively and that explicit memory management can improve
-long-running AI systems.
-
-However, several questions remain relevant as models and agent
-architectures continue to evolve.
-
-First, it is unclear whether the U-shaped
-\emph{Lost-in-the-Middle} \cite{lost-in-the-middle} \cite{hsieh-etal-2024-found} \cite{zhang2024found} effect remains significant in current
-generation language models and how this effect changes with context
-length.
-
-Second, common context-management strategies such as full history,
-fixed windows, summarization, and relevance-based retrieval are often
-studied independently. Their quality--cost trade-offs under controlled
-conditions require further comparison.
-
-Third, different models, tasks, and agent states may require different
-working contexts. This motivates investigating whether the context
-strategy itself should be adaptive.
-
-The proposed research therefore asks:
-
-\begin{enumerate}
-
-    \item Does the Lost-in-the-Middle effect still exist in modern
-    language models, and how does it change as context length increases?
-
-    \item Can selective context strategies maintain or improve task
-    quality compared with providing the complete available context?
-
-    \item Can a lightweight adaptive policy select an appropriate
-    context strategy according to the current task and system state?
-
-\end{enumerate}
-
-The first experiment will vary both relevant-information position and
-total context length:
+and
 
 \[
-    Q = f(p, L),
+    \boxed{
+        \text{Available Information}
+        \not\equiv
+        \text{Effectively Utilized Information}
+    }.
 \]
 
-where $p$ represents the relative position of relevant information and
-$L$ represents total context length.
-
-Subsequent experiments will compare several context strategies:
-
-\[
-\begin{aligned}
-    &\text{Full History},\\
-    &\text{Fixed Window},\\
-    &\text{Summarization},\\
-    &\text{Relevance Retrieval},\\
-    &\text{Adaptive / Hybrid Selection}.
-\end{aligned}
-\]
-
-The project will initially keep the model parameters frozen and will
-not use reinforcement learning to train a separate manager model.
-Instead, the emphasis will be on implementation, controlled
-experiments, and interpretable context-selection policies.
-
-The overall research problem can be summarized as
-
-\[
-\boxed{
-    C_t^{*}
-    =
-    \pi(
-        \text{model},
-        \text{task},
-        \text{state},
-        \text{history},
-        \text{budget}
-    )
-}
-\]
-
-with the objective of finding a better trade-off between task quality
-and context cost.
-
-The central hypothesis is therefore not simply that shorter context is
-better, but that
-
-\[
-\boxed{
-    \text{More Context}
-    \not\equiv
-    \text{Better Context}.
-}
-\]
-
-The broader question is:
-
-\begin{quote}
-How should an agentic system construct the right working context for
-the right model, task, and state?
-\end{quote}
-
-\section{Research Questions}
-The proposed research investigates the following questions:
-
-\begin{enumerate}
-    \item \textbf{RQ1}
-    \begin{quote}
-        How does the position of relevant information within the context affect its utilization by modern LLMs?
-    \end{quote}
-    \item \textbf{RQ2}
-    \begin{quote}
-        How does the length of the context influence the relationship between information position and model performance?
-    \end{quote}
-    \item \textbf{RQ3}
-    \begin{quote}
-        How does information interference from semantically similar distractors affect the utilization of relevant information at different positions?
-    \end{quote}
-\end{enumerate}
+By characterizing these relationships, the research aims to provide empirical
+evidence that may inform future context engineering and agentic system design.

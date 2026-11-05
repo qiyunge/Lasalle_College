@@ -1,0 +1,259 @@
+
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Research Design}
+\label{subsec:research-design}
+
+This study adopts a controlled experimental approach to
+investigate how evidence position and context length affect
+information retrieval accuracy in large language models (LLMs).
+
+The primary experiment uses a factorial design with two
+independent variables: the relative position of relevant
+evidence and the total context length. A synthetic key--value
+retrieval task is used to control the experimental conditions
+and minimize variation in retrieval difficulty.
+
+The experimental framework is expressed as
+\begin{equation}
+    Q = f(p,L \mid m,d_0),
+    \label{eq:primary-framework}
+\end{equation}
+where $Q$ represents retrieval accuracy, $p$ is the relative
+position of relevant evidence, $L$ is the total context
+length, $m$ identifies the evaluated model, and $d_0$
+represents a fixed baseline distractor generation policy.
+
+Under $d_0$, distractor records are generated using a
+consistent sampling procedure without deliberately
+introducing semantic similarity, conflicting evidence,
+or repeated target keys. The policy remains unchanged
+across experimental conditions, although the number
+of distractor records increases with context length.
+
+Model parameters remain fixed throughout the experiments.
+Results are analyzed separately for each model.
+
+\subsection{Experimental Variables}
+\label{subsec:variables}
+
+\subsubsection{Independent Variables}
+
+Two independent variables are manipulated.
+
+\begin{itemize}
+    \item \textbf{Evidence Position ($p$):}
+    The target record is inserted at five relative positions:
+    0\%, 25\%, 50\%, 75\%, and 100\%.
+    These positions are defined relative to the sequence
+    of key--value records, excluding the fixed instructions
+    and retrieval question.
+
+    \item \textbf{Context Length ($L$):}
+    Four target context lengths are considered:
+    2K, 4K, 8K, and 16K tokens.
+    The actual token counts are verified using the tokenizer
+    associated with each evaluated model.
+\end{itemize}
+
+\subsubsection{Dependent Variable}
+
+The dependent variable is retrieval correctness, measured
+as a binary outcome for each test case:
+
+\begin{equation}
+    Y_i =
+    \begin{cases}
+        1, & \text{if the answer is correct},\\
+        0, & \text{otherwise}.
+    \end{cases}
+    \label{eq:correctness}
+\end{equation}
+
+Retrieval accuracy is calculated by aggregating correctness
+across test cases within each experimental condition.
+
+\subsubsection{Controlled Variables}
+
+To isolate the effects of position and context length,
+the following conditions are controlled:
+
+\begin{itemize}
+    \item The target key--value pair and expected answer
+    within each matched test case.
+    \item The retrieval question and instruction format.
+    \item The key and value character sets and lengths.
+    \item The structure and formatting of all records.
+    \item The baseline distractor generation policy $d_0$.
+    \item Model parameters and inference settings.
+    \item The output format and evaluation criteria.
+\end{itemize}
+
+\subsection{Dataset and Context Construction}
+\label{subsec:dataset}
+
+A synthetic key--value retrieval dataset is generated
+to provide precise control over evidence position
+and context length.
+
+Each record contains a key and an associated value.
+Keys are unique within each context, and the target
+key appears exactly once. Keys and values are generated
+using predefined character sets and fixed character
+lengths to standardize record structure.
+
+For example, a simplified context may contain:
+
+\begin{verbatim}
+Key: A7F92
+Value: BLUE
+
+Key: B3K81
+Value: GREEN
+
+Key: C9M24
+Value: RED
+
+Key: D2P65
+Value: WHITE
+
+Key: E8R13
+Value: BLACK
+\end{verbatim}
+
+The corresponding retrieval question is:
+
+\begin{quote}
+\textit{What is the value associated with key C9M24?
+Answer with the value only.}
+\end{quote}
+
+The expected answer is \texttt{RED}.
+
+In this example, the record containing
+\texttt{C9M24} is the target evidence,
+while the remaining records serve as distractors.
+
+For each context length, the same set of distractor
+records is reused across positional conditions.
+The target record is inserted at different relative
+positions while preserving the relative order of
+distractor records.
+
+As context length increases, additional distractor
+records are generated using the same baseline policy
+$d_0$. Thus, $d_0$ specifies a consistent generation
+procedure rather than a fixed number or set of records.
+
+Although key and value character lengths are fixed,
+their tokenized lengths may differ. Actual token counts
+are therefore measured, and the resulting context
+lengths and evidence positions are recorded.
+
+\subsection{Experimental Procedure}
+\label{subsec:procedure}
+
+The experiment follows five steps.
+
+\begin{enumerate}
+    \item \textbf{Generate retrieval instances.}
+
+    Construct a collection of target key--value pairs
+    with unique identifiers and known correct answers.
+
+    \item \textbf{Construct controlled contexts.}
+
+    For each retrieval instance and context length,
+    generate a baseline set of distractor records.
+    Insert the same target record at each selected
+    relative position.
+
+    \item \textbf{Execute model inference.}
+
+    Submit each context and its retrieval question
+    to the selected model. Use deterministic decoding
+    where supported, with a fixed output-token limit.
+
+    \item \textbf{Evaluate responses.}
+
+    Compare the model response against the expected
+    value using exact-match evaluation. Invalid,
+    missing, or incorrect answers are counted
+    as retrieval failures.
+
+    \item \textbf{Repeat across conditions.}
+
+    Repeat the procedure over multiple independently
+    generated retrieval instances. Record the model,
+    context length, evidence position, expected answer,
+    predicted answer, and correctness for each trial.
+\end{enumerate}
+
+\subsection{Evaluation Metrics}
+\label{subsec:evaluation}
+
+The primary evaluation metric is retrieval accuracy:
+
+\begin{equation}
+    \operatorname{Accuracy}(p,L)
+    =
+    \frac{N_{\mathrm{correct}}(p,L)}
+         {N_{\mathrm{total}}(p,L)}.
+    \label{eq:accuracy}
+\end{equation}
+
+To characterize positional differences, the study
+also measures the positional accuracy gap:
+
+\begin{equation}
+    \Delta_{\mathrm{pos}}(L)
+    =
+    \max_p \operatorname{Accuracy}(p,L)
+    -
+    \min_p \operatorname{Accuracy}(p,L).
+    \label{eq:position-gap}
+\end{equation}
+
+This metric quantifies performance variation across
+evidence positions without assuming that all models
+exhibit a U-shaped accuracy pattern.
+
+The interaction between position and context length
+is examined by comparing positional accuracy curves
+and positional gaps across different context lengths.
+
+Results are visualized using accuracy-versus-position
+plots, with separate curves for each context length.
+Where the number of trials permits, confidence
+intervals are reported to indicate measurement
+uncertainty.
+
+\subsection{Reproducibility and Limitations}
+\label{subsec:limitations}
+
+The experiment records dataset-generation seeds,
+model versions, inference configurations, token counts,
+prompts, and evaluation results to support reproducibility.
+
+Synthetic key--value retrieval provides a controlled
+environment for investigating evidence position and
+context length. However, it primarily evaluates
+exact information retrieval rather than complex
+semantic reasoning.
+
+Furthermore, increasing context length requires
+additional distractor records under the fixed record
+structure. Consequently, context length and the
+number of distractor records are not independently
+manipulated in this design.
+
+The observed length effects therefore reflect
+increasing context size under a fixed distractor
+generation policy, rather than the isolated effect
+of token length alone.
+
+The findings will be interpreted as evidence about
+controlled information retrieval and will not be
+generalized directly to all forms of long-context
+reasoning or agentic tasks.

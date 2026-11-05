@@ -1,0 +1,120 @@
+
+\section{Literature Review}
+\label{sec:literature-review}
+
+\subsection{Positional Bias in Long-Context Language Models}
+
+The ability to accept a long input sequence does not necessarily imply that a
+language model can use information equally well at every position. Liu et al.
+(2024)~\cite{liu2024lost} investigated this distinction using multi-document
+question answering and key--value retrieval. By moving relevant evidence to
+different positions while retaining the underlying task, they observed that
+many models performed better when the evidence appeared near the beginning or
+end of the context and worse when it appeared in the middle. This pattern,
+commonly called the \emph{lost-in-the-middle} effect, establishes information
+position as an experimental variable rather than an incidental property of
+prompt formatting.
+
+Subsequent work has investigated ways to mitigate positional bias. Hsieh et al.
+(2024)~\cite{hsieh2024found} proposed calibrating positional attention bias to
+improve long-context utilization. Zhang et al. (2024)~\cite{zhang2024found}
+introduced multi-scale positional encoding (Ms-PoE), which modifies positional
+encoding at inference time to improve access to information in middle
+positions. These studies suggest that positional performance differences can be
+influenced by model mechanisms, but improvements under particular benchmarks do
+not establish that the effect has disappeared across models, tasks, and context
+lengths. The present project therefore treats positional bias as a measurable,
+model-dependent phenomenon rather than assuming a universal U-shaped curve.
+
+\subsection{Context Length and Effective Utilization}
+
+A model's advertised context window specifies how much input it can accept, not
+the amount of information it can reliably use. Bai et al.
+(2024)~\cite{bai2024longbench} introduced LongBench, a benchmark evaluating
+long-context understanding across multiple tasks, including question answering,
+summarization, and code completion. Its results illustrate why performance
+should be assessed on tasks requiring actual use of long inputs, rather than
+inferred from supported token counts alone.
+
+Hsieh et al. (2024)~\cite{hsieh2024ruler} introduced RULER, extending simple
+needle-in-a-haystack evaluation with configurable sequence lengths and tasks
+involving multiple needles, tracing, and aggregation. Their results showed that
+strong performance on simple retrieval tests did not consistently carry over to
+more demanding tasks or longer contexts.
+
+Together, LongBench and RULER motivate separating nominal context capacity from
+effective utilization. They also reveal a methodological challenge: when input
+length increases, the amount of irrelevant material and the complexity of the
+retrieval task may increase at the same time. To isolate the interaction
+between length and position, the proposed study will vary total context length
+and relevant-evidence position explicitly, while keeping the target answer and
+task format fixed wherever feasible.
+
+\subsection{Information Interference and Distractors}
+
+Long contexts may contain not only irrelevant text but also competing
+information that resembles the evidence needed to answer a question. This
+distinction matters because a model can succeed at locating an exact string yet
+struggle when it must distinguish semantically related candidates.
+
+Modarressi et al. (2025)~\cite{modarressi2025nolima} introduced NoLiMa,
+addressing a limitation of conventional needle-in-a-haystack evaluations:
+lexical overlap between a question and its target passage can make retrieval
+unusually easy. By reducing direct lexical matches, NoLiMa requires models to
+identify less explicit associations and reports substantial performance
+degradation for many models as context length grows.
+
+However, NoLiMa does not, by itself, isolate the causal effect of
+\emph{semantically similar distractors}. Removing lexical overlap between a
+question and the answer passage is different from systematically increasing the
+similarity of incorrect passages to the correct one. Likewise, the
+multi-document question-answering experiments of Liu et al.
+(2024)~\cite{liu2024lost} include non-answer passages but do not fully resolve
+how distractor similarity interacts with position and length.
+
+These distinctions motivate the third research question. A controlled
+comparison should hold the correct evidence constant and vary the number and
+semantic similarity of distractors, examining whether the impact differs when
+relevant information appears near the beginning, middle, or end of the context.
+
+\subsection{Synthesis and Research Gap}
+
+The reviewed literature establishes three complementary observations.
+
+First, evidence position can influence retrieval and question-answering
+accuracy~\cite{liu2024lost}. Second, longer accepted inputs do not guarantee
+consistently effective information use, particularly as task demands
+increase~\cite{bai2024longbench,hsieh2024ruler}. Third, evaluation outcomes
+depend on how easily relevant evidence can be distinguished from surrounding
+text~\cite{modarressi2025nolima}. Methods designed to reduce positional
+bias~\cite{hsieh2024found,zhang2024found} further indicate that these effects
+depend on the model and its inference mechanisms.
+
+Although existing studies investigate important aspects of long-context
+utilization, the reviewed evidence does not fully characterize how evidence
+position, context length, and distractor semantic similarity jointly influence
+performance across contemporary language models.
+
+The broader objective of this research is to investigate task quality ($Q$) as
+a function of evidence position ($p$), total context length ($L$), and
+distractor semantic similarity ($d$):
+
+\begin{equation}
+    Q = f(p,L,d).
+    \label{eq:context-utilization}
+\end{equation}
+
+The research adopts a phased experimental approach. The primary investigation
+focuses on the relationship between evidence position and context length, while
+maintaining a controlled baseline distractor condition.
+
+This initial phase examines whether positional effects persist in modern
+language models and how their magnitude changes as context length increases.
+
+A subsequent phase may extend the investigation to distractor semantic
+similarity, depending on available time and computational resources. This
+extension would examine whether semantically similar distractors alter the
+relationship between evidence position, context length, and task performance.
+
+Throughout the experiments, model parameters will remain fixed, and results
+will be reported separately by model and experimental condition.
